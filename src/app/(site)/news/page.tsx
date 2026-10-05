@@ -1,29 +1,21 @@
 import { getNews } from "@/lib/queries";
-import { renderMarkdown, formatDate } from "@/lib/markdown";
+import { formatDateDots, renderMarkdown } from "@/lib/markdown";
 
 export const metadata = { title: "News" };
 
 export default async function NewsPage() {
   const items = await getNews({ publishedOnly: true });
   return (
-    <article className="news active" data-page="news">
-      <header><h2 className="h2 article-title">News</h2></header>
-      {items.length === 0 ? <p className="empty-state">No news yet.</p> : (
-        <ul className="news-list">
-          {items.map((n) => (
-            <li className="news-item" key={n.id}>
-              <div>
-                <time className="news-date" dateTime={n.date}>{formatDate(n.date)}</time>
-                <span className="news-cat">{n.category}</span>
-              </div>
-              <div>
-                <h3 className="news-title">{n.url ? <a href={n.url} target="_blank" rel="noreferrer" style={{ color: "inherit" }}>{n.title}</a> : n.title}</h3>
-                <div className="news-body" dangerouslySetInnerHTML={{ __html: renderMarkdown(n.bodyMarkdown) }} />
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
-    </article>
+    <section className="container section two-col news-home">
+      <h1 className="h-lg">News</h1>
+      <div className="news-list">
+        {items.map((n) => (
+          <div className="news-row" key={n.id}>
+            <b>{formatDateDots(n.date)}</b> - {n.url ? <a className="news-link" href={n.url} target="_blank" rel="noreferrer">{n.title}</a> : n.title}
+            {n.bodyMarkdown && <div className="prose" style={{ fontSize: 17, marginTop: 6 }} dangerouslySetInnerHTML={{ __html: renderMarkdown(n.bodyMarkdown) }} />}
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }

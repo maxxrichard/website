@@ -20,6 +20,21 @@ export const profile = sqliteTable("profile", {
   siteTitle: text("site_title"),
   siteDescription: text("site_description"),
   footerText: text("footer_text"),
+  // Wix-style home page
+  logo: text("logo"),
+  heroImage: text("hero_image"),
+  heroVideo: text("hero_video"),
+  heroSubtitle: text("hero_subtitle"),
+  heroTagline: text("hero_tagline"),
+  heroText: text("hero_text"),
+  aboutPageMarkdown: text("about_page_markdown"),
+  aboutPageImage: text("about_page_image"),
+  addressLine1: text("address_line1"),
+  addressLine2: text("address_line2"),
+  researchIntro: text("research_intro"),
+  teachingIntro: text("teaching_intro"),
+  mediaIntro: text("media_intro"),
+  blogIntro: text("blog_intro"),
   updatedAt: text("updated_at"),
 });
 
@@ -99,6 +114,11 @@ export const publications = sqliteTable("publications", {
   paperUrl: text("paper_url"),
   pdfUrl: text("pdf_url"),
   codeUrl: text("code_url"),
+  posterUrl: text("poster_url"),
+  videoUrl: text("video_url"),
+  slidesUrl: text("slides_url"),
+  image: text("image"),
+  venueTag: text("venue_tag"),
   doi: text("doi"),
   abstract: text("abstract"),
   award: text("award"),
@@ -132,6 +152,7 @@ export const blogPosts = sqliteTable("blog_posts", {
   coverImage: text("cover_image"),
   tags: text("tags"), // comma separated
   externalUrl: text("external_url"), // e.g. Medium link
+  source: text("source"), // e.g. "Medium"
   readingMinutes: integer("reading_minutes"),
   publishedAt: text("published_at").notNull(),
   published: integer("published", { mode: "boolean" }).notNull().default(true),
@@ -161,6 +182,8 @@ export const teaching = sqliteTable("teaching", {
   institution: text("institution"),
   description: text("description"),
   url: text("url"),
+  image: text("image"),
+  terms: text("terms"), // comma separated, e.g. "2025 Spring, 2024 Spring"
   sortOrder: integer("sort_order").notNull().default(0),
 });
 

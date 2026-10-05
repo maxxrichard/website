@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import { Poppins } from "next/font/google";
+import { Work_Sans, Cormorant_Garamond } from "next/font/google";
 import "./base.css";
 import { getProfile } from "@/lib/queries";
 
-const poppins = Poppins({ subsets: ["latin"], weight: ["300", "400", "500", "600"], variable: "--ff-poppins-next", display: "swap" });
+const workSans = Work_Sans({ subsets: ["latin"], weight: ["300", "400", "500", "600", "700"], variable: "--font-sans", display: "swap" });
+const cormorant = Cormorant_Garamond({ subsets: ["latin"], weight: ["400", "500", "600", "700"], style: ["normal", "italic"], variable: "--font-serif", display: "swap" });
 
 export async function generateMetadata(): Promise<Metadata> {
   const p = await getProfile().catch(() => null);
@@ -19,7 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={poppins.variable}>
+    <html lang="en" className={`${workSans.variable} ${cormorant.variable}`}>
       <body>{children}</body>
     </html>
   );

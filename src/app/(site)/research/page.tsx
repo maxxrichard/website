@@ -1,31 +1,30 @@
-import { getProjects, getResearchAreas } from "@/lib/queries";
-import ProjectGrid from "@/components/ProjectGrid";
-import { areaIcons } from "@/components/Icons";
+import { getProfile, getProjects } from "@/lib/queries";
+import { renderMarkdown } from "@/lib/markdown";
 
 export const metadata = { title: "Research" };
 
 export default async function ResearchPage() {
-  const [projects, areas] = await Promise.all([getProjects(), getResearchAreas()]);
+  const [profile, projects] = await Promise.all([getProfile(), getProjects()]);
   return (
-    <article className="portfolio active" data-page="research">
-      <header><h2 className="h2 article-title">Research</h2></header>
-      {areas.length > 0 && (
-        <section className="service" style={{ marginBottom: 35 }}>
-          <h3 className="h3 service-title">Research Interests</h3>
-          <ul className="service-list">
-            {areas.map((a) => { const Icon = areaIcons[a.icon] ?? areaIcons.flask; return (
-              <li className="service-item" key={a.id}>
-                <div className="service-icon-box"><Icon /></div>
-                <div className="service-content-box">
-                  <h4 className="h4 service-item-title">{a.title}</h4>
-                  <p className="service-item-text">{a.description}</p>
-                </div>
-              </li>); })}
-          </ul>
-        </section>
-      )}
-      <h3 className="h3 service-title">Projects</h3>
-      <ProjectGrid projects={projects} />
-    </article>
+    <section className="container research-grid">
+      <div>
+        <h1 className="h-xl">Research<br />Projects</h1>
+        {profile?.researchIntro && <div className="intro serif" dangerouslySetInnerHTML={{ __html: renderMarkdown(profile.researchIntro) }} />}
+      </div>
+      <div>
+        {projects.map((p) => (
+          <article className="project" key={p.id} id={p.slug}>
+            <h2 className="project-title">{p.title}</h2>
+            <p className="project-text">
+              {p.summary}{" "}
+              {p.url && <a href={p.url} target="_blank" rel="noreferrer">More info</a>}
+            </p>
+            {p.contentMarkdown && <div className="project-more prose" dangerouslySetInnerHTML={{ __html: renderMarkdown(p.contentMarkdown) }} />}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            {p.image && <img src={p.image} alt={p.title} loading="lazy" />}
+          </article>
+        ))}
+      </div>
+    </section>
   );
 }

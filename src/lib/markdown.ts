@@ -42,3 +42,10 @@ export function formatDate(iso: string | null | undefined, opts: Intl.DateTimeFo
   if (Number.isNaN(d.getTime())) return iso;
   return d.toLocaleDateString("en-US", opts);
 }
+
+/** 2026-06-05 → 05.06.2026 */
+export function formatDateDots(iso: string | null | undefined): string {
+  if (!iso) return "";
+  const m = iso.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  return m ? `${m[3]}.${m[2]}.${m[1]}` : iso;
+}

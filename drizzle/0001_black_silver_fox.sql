@@ -1,0 +1,22 @@
+ALTER TABLE `blog_posts` ADD `source` text;--> statement-breakpoint
+ALTER TABLE `profile` ADD `logo` text;--> statement-breakpoint
+ALTER TABLE `profile` ADD `hero_image` text;--> statement-breakpoint
+ALTER TABLE `profile` ADD `hero_video` text;--> statement-breakpoint
+ALTER TABLE `profile` ADD `hero_subtitle` text;--> statement-breakpoint
+ALTER TABLE `profile` ADD `hero_tagline` text;--> statement-breakpoint
+ALTER TABLE `profile` ADD `hero_text` text;--> statement-breakpoint
+ALTER TABLE `profile` ADD `about_page_markdown` text;--> statement-breakpoint
+ALTER TABLE `profile` ADD `about_page_image` text;--> statement-breakpoint
+ALTER TABLE `profile` ADD `address_line1` text;--> statement-breakpoint
+ALTER TABLE `profile` ADD `address_line2` text;--> statement-breakpoint
+ALTER TABLE `profile` ADD `research_intro` text;--> statement-breakpoint
+ALTER TABLE `profile` ADD `teaching_intro` text;--> statement-breakpoint
+ALTER TABLE `profile` ADD `media_intro` text;--> statement-breakpoint
+ALTER TABLE `profile` ADD `blog_intro` text;--> statement-breakpoint
+ALTER TABLE `publications` ADD `poster_url` text;--> statement-breakpoint
+ALTER TABLE `publications` ADD `video_url` text;--> statement-breakpoint
+ALTER TABLE `publications` ADD `slides_url` text;--> statement-breakpoint
+ALTER TABLE `publications` ADD `image` text;--> statement-breakpoint
+ALTER TABLE `publications` ADD `venue_tag` text;--> statement-breakpoint
+ALTER TABLE `teaching` ADD `image` text;--> statement-breakpoint
+ALTER TABLE `teaching` ADD `terms` text;

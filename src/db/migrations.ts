@@ -19,5 +19,32 @@ export const migrations: Migration[] = [
       "CREATE TABLE `social_links` (\n\t`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,\n\t`platform` text NOT NULL,\n\t`label` text NOT NULL,\n\t`url` text NOT NULL,\n\t`sort_order` integer DEFAULT 0 NOT NULL,\n\t`visible` integer DEFAULT true NOT NULL\n);",
       "CREATE TABLE `teaching` (\n\t`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,\n\t`term` text NOT NULL,\n\t`course` text NOT NULL,\n\t`role` text DEFAULT 'Teaching Assistant' NOT NULL,\n\t`institution` text,\n\t`description` text,\n\t`url` text,\n\t`sort_order` integer DEFAULT 0 NOT NULL\n);"
     ]
+  },
+  {
+    "name": "0001_black_silver_fox",
+    "statements": [
+      "ALTER TABLE `blog_posts` ADD `source` text;",
+      "ALTER TABLE `profile` ADD `logo` text;",
+      "ALTER TABLE `profile` ADD `hero_image` text;",
+      "ALTER TABLE `profile` ADD `hero_video` text;",
+      "ALTER TABLE `profile` ADD `hero_subtitle` text;",
+      "ALTER TABLE `profile` ADD `hero_tagline` text;",
+      "ALTER TABLE `profile` ADD `hero_text` text;",
+      "ALTER TABLE `profile` ADD `about_page_markdown` text;",
+      "ALTER TABLE `profile` ADD `about_page_image` text;",
+      "ALTER TABLE `profile` ADD `address_line1` text;",
+      "ALTER TABLE `profile` ADD `address_line2` text;",
+      "ALTER TABLE `profile` ADD `research_intro` text;",
+      "ALTER TABLE `profile` ADD `teaching_intro` text;",
+      "ALTER TABLE `profile` ADD `media_intro` text;",
+      "ALTER TABLE `profile` ADD `blog_intro` text;",
+      "ALTER TABLE `publications` ADD `poster_url` text;",
+      "ALTER TABLE `publications` ADD `video_url` text;",
+      "ALTER TABLE `publications` ADD `slides_url` text;",
+      "ALTER TABLE `publications` ADD `image` text;",
+      "ALTER TABLE `publications` ADD `venue_tag` text;",
+      "ALTER TABLE `teaching` ADD `image` text;",
+      "ALTER TABLE `teaching` ADD `terms` text;"
+    ]
   }
 ];

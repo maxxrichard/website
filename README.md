@@ -8,7 +8,7 @@ added or edited without touching code.
 |---|---|
 | Framework | [Next.js 15](https://nextjs.org) (App Router, React 19, TypeScript) |
 | Database | SQLite via [libSQL](https://github.com/tursodatabase/libsql-client-ts) + [Drizzle ORM](https://orm.drizzle.team) — switch to hosted Turso/libSQL with one env var |
-| Styling | The original *vCard* dark theme (Poppins, yellow-gold accents, sidebar + tab navigation) ported to React |
+| Styling | Hand-written CSS replicating the original design (Work Sans + Cormorant Garamond, black header/footer, lime venue tags) |
 | Admin | `/admin` — password-protected CMS with CRUD for every content type, image upload, Markdown editing, message inbox |
 | Deploy | Dockerfile + docker-compose, or any Node host (Railway, Render, Fly.io, Hetzner/VPS, …) |
 
@@ -34,20 +34,42 @@ npm start        # runs the standalone server with .env loaded (scripts/start.mj
 
 ## 2. Site structure
 
+The pages mirror the original Wix site one to one.
+
 | URL | Content | Managed in admin under |
 |---|---|---|
-| `/` | About me, research interests ("What I'm doing"), education, experience, recent news | Profile, Research areas, Education, Experience, News |
-| `/news` | Dated announcements (awards, talks, papers, media) | News |
-| `/research` | Research interests + project cards with category filter; `/research/<slug>` detail pages | Research areas, Projects |
-| `/publications` | Publications grouped by year with type filter, links, abstracts, awards, BibTeX | Publications |
-| `/blog` | Blog posts (Markdown); `/blog/<slug>` | Blog |
-| `/teaching` | Courses, seminars, supervision | Teaching |
-| `/press` | Media coverage with embedded YouTube videos | Press |
-| `/contact` | Map, direct contact details, contact form (stored in DB) | Profile, Messages |
+| `/` | Hero (name, title, social icons, tagline, photo/video), About Me with portrait, Recent Publications (the three entries marked *Highlight*), News list, Contact footer | Profile, Social links, Publications, News |
+| `/about` | About Me text + talk photo, Education, Experience | Profile, Education, Experience |
+| `/research` | Research Projects: intro + project texts with "More info" links and images | Profile (intro), Projects |
+| `/publications` | Publications by year with venue tags, Abstract / Paper / Code / Poster / Video pills and figures | Publications |
+| `/teaching` | Teaching intro + course cards with images and term pills | Profile (intro), Teaching |
+| `/media` | Media Coverage: alternating video + text entries | Profile (intro), Media |
+| `/blogs` | Blog Posts: image + text entries (external or internal posts) | Profile (intro), Blog |
+| `/contact` | Contact information, map and a contact form (messages are stored) | Profile, Messages |
+| `/news` | Full news list (also shown on the home page) | News |
 | `/admin` | CMS | — |
 
-The sidebar (photo, name, title, contacts, social icons) and the footer are driven by **Profile & settings** and
-**Social links**.
+Header (logo + menu) and the black Contact footer are shared by every page and driven by **Profile & settings**
+and **Social links**.
+
+### Where to put files
+
+`public/files/` is the folder for your own material — see `public/files/README.md`:
+
+```
+public/files/papers/    paper PDFs            →  /files/papers/<name>.pdf
+public/files/posters/   posters               →  /files/posters/<name>.pdf
+public/files/slides/    slides                →  /files/slides/<name>.pdf
+public/files/cv/        CV                    →  /files/cv/<name>.pdf
+public/files/images/    photos, figures, hero video (.mp4)
+```
+
+Enter the resulting path (for example `/files/papers/sacnn.pdf`) in the matching admin field (Paper URL, Poster URL,
+Figure, …) and the pill/figure appears on the site. The admin upload button is an alternative that stores files in
+`public/uploads/` (or Vercel Blob).
+
+The images of the current site live in `public/images/site/` (extracted from page screenshots). Replace them with
+the originals under the same names to upgrade their quality.
 
 ## 3. Admin panel
 
@@ -150,15 +172,16 @@ loads the full site content. So a plain "Import Git Repository" deploy works imm
 ## 7. Project layout
 
 ```
-src/app/(site)/        public pages (home, news, research, publications, blog, teaching, press, contact)
+src/app/(site)/        public pages (home, about, research, publications, teaching, media, blogs, contact, news)
 src/app/admin/         CMS (login, dashboard, generic resource list/form, profile, messages)
 src/app/api/upload     image/PDF upload endpoint (admin only)
-src/components/        sidebar, navbar, filters, forms
+src/components/        header, footer, social icons, publication entry, contact form
 src/db/                Drizzle schema + client
 src/lib/               auth, queries, markdown helpers, resource (CMS form) definitions
 scripts/               migrate.ts, seed.ts, seed-if-empty.ts
 drizzle/               SQL migrations
-public/images          profile photo, avatar, project images
+public/images/site     site images (portrait, hero, logo, project/teaching/publication figures)
+public/files           your papers, posters, slides, CV and pictures
 ```
 
 To add a new field to a content type: edit `src/db/schema.ts`, run `npm run db:generate && npm run db:migrate`,
@@ -166,10 +189,9 @@ then add the field to `src/lib/resources.ts` (admin form) and render it in the p
 
 ## 8. Content notes
 
-The content was assembled from the owner's own sources: the previous version of the site
-(`maxxrichard/vcard.github.io`), the GitHub profile README, the publication tracker, DBLP/arXiv/OpenReview/AISeL
-listings and DFKI/Saarland University pages. Items whose exact dates could not be verified (e.g. the #WEatDFKI
-feature, early career dates, teaching terms) are marked approximate in the seed and can be corrected in the admin
-panel in seconds.
+Text, structure and order follow the live site (maxxrichard06.wixsite.com/website) page by page. Two arXiv preprints
+(LongMoE, CAMOS) are stored but hidden because the live site does not list them; switch *Visible on site* in the
+admin to show them. The Instagram link in *Social links* needs your profile URL. Buttons such as *Code* or *Poster*
+appear as soon as the corresponding URL is filled in.
 
 See `ATTRIBUTION.md` for third-party credits.

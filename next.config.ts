@@ -6,6 +6,13 @@ const nextConfig: NextConfig = {
   serverExternalPackages: ["@libsql/client"],
   images: { unoptimized: true },
   experimental: { serverActions: { bodySizeLimit: "20mb" } },
+  async redirects() {
+    return [
+      { source: "/press", destination: "/media", permanent: true },
+      { source: "/blog", destination: "/blogs", permanent: true },
+      { source: "/blog/:slug", destination: "/blogs/:slug", permanent: true },
+    ];
+  },
 };
 
 export default nextConfig;

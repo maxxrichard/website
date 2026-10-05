@@ -34,7 +34,7 @@ function parseField(f: FieldDef, formData: FormData): unknown {
 }
 
 function revalidateAll() {
-  ["/", "/news", "/research", "/publications", "/blog", "/teaching", "/press", "/contact", "/admin"].forEach((p) => revalidatePath(p, "layout"));
+  ["/", "/about", "/news", "/research", "/publications", "/blogs", "/teaching", "/media", "/contact", "/admin"].forEach((p) => revalidatePath(p, "layout"));
 }
 
 export async function saveRecord(resourceKey: string, id: number | null, formData: FormData) {

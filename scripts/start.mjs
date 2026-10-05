@@ -38,10 +38,8 @@ process.env.UPLOAD_DIR = path.resolve(root, process.env.UPLOAD_DIR ?? "public/up
 fs.mkdirSync(process.env.UPLOAD_DIR, { recursive: true });
 
 function link(target, dest) {
-  if (fs.existsSync(dest)) {
-    const st = fs.lstatSync(dest);
-    if (st.isSymbolicLink()) fs.unlinkSync(dest); else return; // keep a real copy (e.g. Docker)
-  }
+  // Replace whatever the build left there (a partial copy or an old link) with a link to the real folder.
+  if (fs.existsSync(dest) || fs.lstatSync(dest, { throwIfNoEntry: false })) fs.rmSync(dest, { recursive: true, force: true });
   fs.mkdirSync(path.dirname(dest), { recursive: true });
   fs.symlinkSync(target, dest, "junction");
 }
