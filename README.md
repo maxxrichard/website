@@ -1,0 +1,159 @@
+# maxxrichard.com — personal academic website + CMS
+
+A complete, self-hostable replica of **www.maxxrichard.com** (Maxx Richard Rahman) with a database and an
+admin panel, so publications, projects, news, blog posts, press coverage, teaching entries and the profile can be
+added or edited without touching code.
+
+| Area | Tech |
+|---|---|
+| Framework | [Next.js 15](https://nextjs.org) (App Router, React 19, TypeScript) |
+| Database | SQLite via [libSQL](https://github.com/tursodatabase/libsql-client-ts) + [Drizzle ORM](https://orm.drizzle.team) — switch to hosted Turso/libSQL with one env var |
+| Styling | The original *vCard* dark theme (Poppins, yellow-gold accents, sidebar + tab navigation) ported to React |
+| Admin | `/admin` — password-protected CMS with CRUD for every content type, image upload, Markdown editing, message inbox |
+| Deploy | Dockerfile + docker-compose, or any Node host (Railway, Render, Fly.io, Hetzner/VPS, …) |
+
+---
+
+## 1. Quick start (local)
+
+```bash
+git clone https://github.com/maxxrichard/website.git
+cd website
+npm install
+cp .env.example .env            # then edit ADMIN_EMAIL / ADMIN_PASSWORD / SESSION_SECRET
+npm run setup                   # creates data/site.db, runs migrations, seeds all content
+npm run dev                     # http://localhost:3000  (admin: http://localhost:3000/admin)
+```
+
+Production build:
+
+```bash
+npm run build
+npm start        # runs the standalone server with .env loaded (scripts/start.mjs)
+```
+
+## 2. Site structure
+
+| URL | Content | Managed in admin under |
+|---|---|---|
+| `/` | About me, research interests ("What I'm doing"), education, experience, recent news | Profile, Research areas, Education, Experience, News |
+| `/news` | Dated announcements (awards, talks, papers, media) | News |
+| `/research` | Research interests + project cards with category filter; `/research/<slug>` detail pages | Research areas, Projects |
+| `/publications` | Publications grouped by year with type filter, links, abstracts, awards, BibTeX | Publications |
+| `/blog` | Blog posts (Markdown); `/blog/<slug>` | Blog |
+| `/teaching` | Courses, seminars, supervision | Teaching |
+| `/press` | Media coverage with embedded YouTube videos | Press |
+| `/contact` | Map, direct contact details, contact form (stored in DB) | Profile, Messages |
+| `/admin` | CMS | — |
+
+The sidebar (photo, name, title, contacts, social icons) and the footer are driven by **Profile & settings** and
+**Social links**.
+
+## 3. Admin panel
+
+- Login at `/admin/login` with `ADMIN_EMAIL` / `ADMIN_PASSWORD` from the environment. Sessions are signed
+  HttpOnly cookies (7 days) using `SESSION_SECRET`.
+- Every content type has a list (search, visibility toggle, delete) and a form (create/edit).
+- **Images / PDFs** can be uploaded from any image field (stored in `public/uploads`, max 15 MB). You can also
+  paste an external URL.
+- **Markdown** is supported in About me, project descriptions, blog posts and news bodies.
+- Author lists: wrap your own name in double asterisks (`**Rahman, M.R.**`) to render it bold.
+- **Messages** from the contact form are listed under *Messages* with read/unread state.
+
+## 4. Configuration (`.env`)
+
+| Variable | Purpose |
+|---|---|
+| `DATABASE_URL` | `file:./data/site.db` (default) or a libSQL/Turso URL such as `libsql://xyz.turso.io` |
+| `DATABASE_AUTH_TOKEN` | Only for remote libSQL/Turso |
+| `ADMIN_EMAIL`, `ADMIN_PASSWORD` | Admin credentials |
+| `SESSION_SECRET` | Long random string signing the admin cookie (`openssl rand -hex 32`) |
+| `SITE_URL` | Public URL, used for metadata, `robots.txt` and `sitemap.xml` |
+| `UPLOAD_DIR` | Optional, defaults to `public/uploads` |
+
+## 5. Database
+
+Schema: `src/db/schema.ts`. Tables: `profile`, `social_links`, `education`, `experience`, `research_areas`,
+`projects`, `publications`, `news`, `blog_posts`, `press`, `teaching`, `messages`.
+
+```bash
+npm run db:generate   # create a new migration after editing the schema
+npm run db:migrate    # apply migrations
+npm run db:seed       # (re)load the full seed content – replaces content tables, keeps messages
+npm run db:reset      # delete the DB and start over
+```
+
+The seed (`scripts/seed.ts`) contains the complete content of the site. Everything can afterwards be edited in the
+admin panel; the DB is the source of truth.
+
+## 6. Hosting and connecting your domain
+
+### Option A — Docker on a VPS (Hetzner, DigitalOcean, …) — recommended
+
+```bash
+cp .env.example .env && nano .env        # set credentials, SESSION_SECRET, SITE_URL=https://www.maxxrichard.com
+docker compose up -d --build             # site on port 3000, data persisted in Docker volumes
+```
+
+Put a reverse proxy with TLS in front, e.g. [Caddy](https://caddyserver.com):
+
+```
+www.maxxrichard.com, maxxrichard.com {
+    reverse_proxy localhost:3000
+}
+```
+
+DNS (at your registrar / Wix DNS):
+
+| Type | Name | Value |
+|---|---|---|
+| `A` | `@` | server IPv4 |
+| `AAAA` | `@` | server IPv6 (optional) |
+| `CNAME` | `www` | `maxxrichard.com` |
+
+Caddy obtains Let's Encrypt certificates automatically. Back up the volumes `site-data` (database) and
+`site-uploads` (images).
+
+### Option B — Railway / Render / Fly.io (Node or Docker)
+
+1. Create a service from this repo (they detect the `Dockerfile`).
+2. Attach a **persistent volume** mounted at `/app/data` (and `/app/public/uploads`), or set `DATABASE_URL` to a
+   [Turso](https://turso.tech) database (free tier) and `DATABASE_AUTH_TOKEN`.
+3. Set the environment variables from section 4.
+4. Add the custom domain in the provider's dashboard and create the DNS `CNAME`/`A` records it shows.
+
+### Option C — Vercel
+
+Vercel's filesystem is read-only, so use Turso for the database (`DATABASE_URL=libsql://…`,
+`DATABASE_AUTH_TOKEN=…`) and host uploaded images externally (paste URLs) or on Vercel Blob. Add the domain under
+*Project → Settings → Domains*.
+
+On first start the container runs migrations and seeds the database if it is empty (`SEED_ON_EMPTY=false` disables
+seeding).
+
+## 7. Project layout
+
+```
+src/app/(site)/        public pages (home, news, research, publications, blog, teaching, press, contact)
+src/app/admin/         CMS (login, dashboard, generic resource list/form, profile, messages)
+src/app/api/upload     image/PDF upload endpoint (admin only)
+src/components/        sidebar, navbar, filters, forms
+src/db/                Drizzle schema + client
+src/lib/               auth, queries, markdown helpers, resource (CMS form) definitions
+scripts/               migrate.ts, seed.ts, seed-if-empty.ts
+drizzle/               SQL migrations
+public/images          profile photo, avatar, project images
+```
+
+To add a new field to a content type: edit `src/db/schema.ts`, run `npm run db:generate && npm run db:migrate`,
+then add the field to `src/lib/resources.ts` (admin form) and render it in the page component.
+
+## 8. Content notes
+
+The content was assembled from the owner's own sources: the previous version of the site
+(`maxxrichard/vcard.github.io`), the GitHub profile README, the publication tracker, DBLP/arXiv/OpenReview/AISeL
+listings and DFKI/Saarland University pages. Items whose exact dates could not be verified (e.g. the #WEatDFKI
+feature, early career dates, teaching terms) are marked approximate in the seed and can be corrected in the admin
+panel in seconds.
+
+See `ATTRIBUTION.md` for third-party credits.

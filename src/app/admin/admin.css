@@ -1,0 +1,78 @@
+:root { --adm-bg: #0f1115; --adm-panel: #171a21; --adm-border: #262b36; --adm-text: #e6e8ee; --adm-muted: #9aa3b2; --adm-accent: #ffdb70; --adm-accent-2: #ffb86b; --adm-danger: #e5484d; }
+body { background: var(--adm-bg); color: var(--adm-text); font-family: 'Poppins', system-ui, sans-serif; }
+.adm-shell { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+.adm-side { background: var(--adm-panel); border-right: 1px solid var(--adm-border); padding: 22px 16px; position: sticky; top: 0; height: 100vh; overflow: auto; }
+.adm-brand { font-weight: 600; font-size: 16px; color: var(--adm-accent); margin-bottom: 20px; display: block; }
+.adm-nav a { display: flex; justify-content: space-between; align-items: center; padding: 9px 12px; border-radius: 8px; color: var(--adm-muted); font-size: 14px; }
+.adm-nav a:hover, .adm-nav a.active { background: #20242e; color: var(--adm-text); }
+.adm-nav .adm-count { font-size: 11px; background: #2a2f3b; padding: 1px 7px; border-radius: 10px; }
+.adm-nav-group { margin: 16px 0 6px; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--adm-muted); padding-left: 12px; }
+.adm-main { padding: 28px 32px; max-width: 1200px; width: 100%; }
+.adm-header { display: flex; justify-content: space-between; align-items: center; gap: 15px; flex-wrap: wrap; margin-bottom: 22px; }
+.adm-header h1 { font-size: 22px; font-weight: 600; }
+.adm-header p { color: var(--adm-muted); font-size: 13px; margin-top: 4px; }
+.adm-card { background: var(--adm-panel); border: 1px solid var(--adm-border); border-radius: 14px; padding: 22px; }
+.adm-muted { color: var(--adm-muted); font-size: 13px; }
+.adm-error { color: var(--adm-danger); font-size: 13px; margin: 8px 0; }
+.adm-success { background: #16311f; border: 1px solid #1f5a33; color: #9be6b2; padding: 10px 14px; border-radius: 10px; font-size: 13px; margin-bottom: 18px; }
+.adm-btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 16px; border-radius: 9px; border: 1px solid var(--adm-border); background: #20242e; color: var(--adm-text); font-size: 14px; cursor: pointer; text-decoration: none; }
+.adm-btn:hover { background: #262b37; }
+.adm-btn-primary { background: linear-gradient(135deg, var(--adm-accent), var(--adm-accent-2)); color: #111; border: none; font-weight: 500; }
+.adm-btn-primary:hover { filter: brightness(1.05); }
+.adm-btn-danger { color: #ff8a8e; border-color: #4a2224; background: #2a1618; }
+.adm-btn-sm { padding: 5px 10px; font-size: 12px; }
+.adm-btn:disabled { opacity: .6; cursor: default; }
+/* stats */
+.adm-stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 14px; margin-bottom: 26px; }
+.adm-stat { background: var(--adm-panel); border: 1px solid var(--adm-border); border-radius: 14px; padding: 18px; display: block; color: inherit; }
+.adm-stat:hover { border-color: #3a4150; }
+.adm-stat .n { font-size: 28px; font-weight: 600; color: var(--adm-accent); }
+.adm-stat .l { font-size: 13px; color: var(--adm-muted); }
+/* table */
+.adm-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.adm-table th, .adm-table td { text-align: left; padding: 11px 12px; border-bottom: 1px solid var(--adm-border); vertical-align: top; }
+.adm-table th { color: var(--adm-muted); font-weight: 500; font-size: 12px; text-transform: uppercase; letter-spacing: .05em; }
+.adm-table tr:hover td { background: #1b1f28; }
+.adm-table a { color: var(--adm-text); }
+.adm-table a:hover { color: var(--adm-accent); }
+.adm-table .actions { white-space: nowrap; display: flex; gap: 6px; }
+.adm-badge { display: inline-block; padding: 2px 8px; border-radius: 8px; font-size: 11px; background: #2a2f3b; color: var(--adm-muted); }
+.adm-badge.on { background: #16311f; color: #9be6b2; }
+.adm-badge.off { background: #3a1d1f; color: #ff9a9e; }
+/* forms */
+.adm-form { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 18px; }
+.adm-form label, .adm-login-card label { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: var(--adm-muted); grid-column: 1 / -1; }
+.adm-form label.half { grid-column: span 1; }
+.adm-form input, .adm-form textarea, .adm-form select, .adm-login-card input { background: #0f1115; border: 1px solid var(--adm-border); border-radius: 9px; color: var(--adm-text); padding: 10px 12px; font: inherit; font-size: 14px; width: 100%; }
+.adm-form input:focus, .adm-form textarea:focus, .adm-form select:focus { outline: none; border-color: var(--adm-accent); }
+.adm-form textarea { min-height: 90px; resize: vertical; }
+.adm-form textarea.md { min-height: 260px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; }
+.adm-form .check { flex-direction: row; align-items: center; gap: 10px; color: var(--adm-text); }
+.adm-form .check input { width: 18px; height: 18px; }
+.adm-form .help { font-size: 12px; color: var(--adm-muted); }
+.adm-form-actions { grid-column: 1 / -1; display: flex; gap: 10px; justify-content: space-between; align-items: center; margin-top: 8px; border-top: 1px solid var(--adm-border); padding-top: 18px; }
+.adm-image-field { display: flex; flex-direction: column; gap: 8px; }
+.adm-image-field .row { display: flex; gap: 8px; align-items: center; }
+.adm-image-field img { max-height: 120px; border-radius: 8px; border: 1px solid var(--adm-border); }
+.adm-login { min-height: 100vh; display: grid; place-items: center; padding: 20px; }
+.adm-login-card { width: 100%; max-width: 380px; display: flex; flex-direction: column; gap: 14px; }
+.adm-login-card h1 { font-size: 20px; }
+.adm-msg { border-bottom: 1px solid var(--adm-border); padding: 16px 0; }
+.adm-msg .meta { display: flex; gap: 12px; align-items: center; font-size: 13px; color: var(--adm-muted); flex-wrap: wrap; }
+.adm-msg .body { white-space: pre-wrap; margin: 8px 0; font-size: 14px; }
+.adm-topbar { display: none; }
+@media (max-width: 860px) {
+  .adm-shell { grid-template-columns: 1fr; }
+  .adm-side { position: static; height: auto; }
+  .adm-main { padding: 20px 16px; }
+  .adm-form { grid-template-columns: 1fr; }
+  .adm-form label.half { grid-column: 1 / -1; }
+}
+.adm-main a { color: var(--adm-accent); }
+.adm-main a.adm-btn, .adm-main a.adm-stat { color: var(--adm-text); }
+.adm-main a.adm-btn-primary { color: #111; }
+.adm-table td a { color: var(--adm-text); }
+ul { list-style: none; margin: 0; padding: 0; }
+button { font: inherit; cursor: pointer; }
+input, textarea, select { font: inherit; }
+h1, h2, h3, p { margin: 0; }

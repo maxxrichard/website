@@ -1,0 +1,5 @@
+/* Minimal global base shared by the public site and the admin. */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+html { font-family: var(--ff-poppins-next, 'Poppins', sans-serif); -webkit-text-size-adjust: 100%; }
+a { text-decoration: none; color: inherit; }
