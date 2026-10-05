@@ -9,21 +9,23 @@ export default async function ContactPage() {
   if (!profile) return null;
   return (
     <section className="container contact-page">
-      <div>
-        <h1 className="h-lg">Contact<br />Information</h1>
+      <div data-reveal>
+        <p className="eyebrow">Get in touch</p>
+        <h1 className="h-lg" style={{ marginTop: 10 }}>Contact<br />Information</h1>
         <div className="footer-block">
           {profile.affiliation && <p>{profile.affiliation}</p>}
           {(profile.addressLine1 || profile.addressLine2) && <p>{profile.addressLine1}<br />{profile.addressLine2}</p>}
           <p>
-            {profile.email && <><a className="underline" href={`mailto:${profile.email}`}>{profile.email}</a><br /></>}
-            {profile.phone && <a href={`tel:${profile.phone.replace(/[^+\d]/g, "")}`}>{profile.phone}</a>}
+            {profile.email && <><a className="link-u" href={`mailto:${profile.email}`}>{profile.email}</a><br /></>}
+            {profile.phone && <a className="link-u" href={`tel:${profile.phone.replace(/[^+\d]/g, "")}`}>{profile.phone}</a>}
           </p>
           <SocialIcons socials={socials} />
         </div>
         {profile.mapEmbedUrl && <div className="map"><iframe src={profile.mapEmbedUrl} loading="lazy" title="Map" /></div>}
       </div>
-      <div>
-        <h2 className="h-md" style={{ marginBottom: 30 }}>Send a message</h2>
+      <div data-reveal style={{ ["--i" as string]: 1 }}>
+        <p className="eyebrow">Message</p>
+        <h2 className="h-md" style={{ margin: "10px 0 30px" }}>Send a message</h2>
         <ContactForm />
       </div>
     </section>

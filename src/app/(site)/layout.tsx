@@ -1,6 +1,8 @@
 import "../site.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import Reveal from "@/components/Reveal";
+import BackToTop from "@/components/BackToTop";
 import { getProfile, getSocialLinks } from "@/lib/queries";
 
 export const dynamic = "force-dynamic";
@@ -20,6 +22,8 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       <Header logo={profile.logo} name={profile.fullName} />
       <main>{children}</main>
       <Footer profile={profile} socials={socials} />
+      <Reveal />
+      <BackToTop />
     </>
   );
 }

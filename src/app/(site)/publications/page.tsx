@@ -1,22 +1,20 @@
 import { getPublications } from "@/lib/queries";
 import { renderAuthors } from "@/lib/markdown";
-import PublicationEntry from "@/components/PublicationEntry";
+import PublicationsBrowser from "@/components/PublicationsBrowser";
 
 export const metadata = { title: "Publications" };
 
 export default async function PublicationsPage() {
   const pubs = await getPublications();
-  const years = Array.from(new Set(pubs.map((p) => p.year))).sort((a, b) => b - a);
+  const items = pubs.map((p) => ({ ...p, authorsHtml: renderAuthors(p.authors) }));
   return (
     <section className="pubs-wrap">
-      <h1 className="h-xl">Publications</h1>
-      {years.map((y) => (
-        <div className="pub-year-block" key={y}>
-          <h2 className="pub-year">{y}</h2>
-          {pubs.filter((p) => p.year === y).map((p) => <PublicationEntry key={p.id} pub={p} authorsHtml={renderAuthors(p.authors)} />)}
-        </div>
-      ))}
-      {pubs.length === 0 && <p>No publications yet.</p>}
+      <div className="page-head" data-reveal>
+        <p className="eyebrow">Research output</p>
+        <h1 className="h-xl" style={{ marginTop: 10 }}>Publications</h1>
+        <p className="lead">Peer-reviewed papers, book chapters and theses. Filter by type or year, search, open abstracts, and copy a citation with one click.</p>
+      </div>
+      <PublicationsBrowser items={items} />
     </section>
   );
 }

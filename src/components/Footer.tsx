@@ -1,5 +1,7 @@
+import Link from "next/link";
 import type { Profile, SocialLink } from "@/db/schema";
 import SocialIcons from "./SocialIcons";
+import { NAV_ITEMS } from "@/lib/nav";
 
 export default function Footer({ profile, socials }: { profile: Profile; socials: SocialLink[] }) {
   return (
@@ -15,14 +17,16 @@ export default function Footer({ profile, socials }: { profile: Profile; socials
                 {profile.email && <><a href={`mailto:${profile.email}`}>{profile.email}</a><br /></>}
                 {profile.phone && <a href={`tel:${profile.phone.replace(/[^+\d]/g, "")}`}>{profile.phone}</a>}
               </p>
-              <SocialIcons socials={socials} />
+              <SocialIcons socials={socials} className="icon-row dark" />
             </div>
           </div>
           <div className="footer-logo">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             {profile.logo && <img src={profile.logo} alt={profile.fullName} />}
           </div>
-          <div />
+          <nav className="footer-right" aria-label="Footer">
+            {NAV_ITEMS.map((i) => <Link key={i.href} href={i.href}>{i.label}</Link>)}
+          </nav>
         </div>
       </footer>
       <div className="copyright">{profile.footerText ?? `©${new Date().getFullYear()} ${profile.fullName}. All rights reserved.`}</div>

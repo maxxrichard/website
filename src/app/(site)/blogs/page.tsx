@@ -8,30 +8,34 @@ export default async function BlogsPage() {
   const [profile, posts] = await Promise.all([getProfile(), getBlogPosts()]);
   return (
     <section className="list-wrap">
-      <h1 className="h-xl">Blog Posts</h1>
-      {profile?.blogIntro && <div className="intro serif" dangerouslySetInnerHTML={{ __html: renderMarkdown(profile.blogIntro) }} />}
-      <hr className="list-divider" />
+      <div data-reveal>
+        <p className="eyebrow">Writing</p>
+        <h1 className="h-xl" style={{ marginTop: 10 }}>Blog Posts</h1>
+        {profile?.blogIntro && <div className="intro serif" dangerouslySetInnerHTML={{ __html: renderMarkdown(profile.blogIntro) }} />}
+      </div>
       <div className="media-list">
         {posts.map((p) => {
           const href = p.externalUrl ?? `/blogs/${p.slug}`;
           const external = Boolean(p.externalUrl);
           return (
-            <article className="media-item" key={p.id}>
+            <article className="media-item" key={p.id} data-reveal>
               <div className="media-img">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 {p.coverImage && <img src={p.coverImage} alt={p.title} loading="lazy" />}
               </div>
               <div>
-                <div className="media-meta">{p.source ?? "Blog"}, {formatDateDots(p.publishedAt)}</div>
+                <div className="media-meta">{p.source ?? "Blog"} · {formatDateDots(p.publishedAt)}{p.readingMinutes ? ` · ${p.readingMinutes} min read` : ""}</div>
                 <h2 className="media-title">
-                  {external ? <a href={href} target="_blank" rel="noreferrer" className="link">{p.title}</a> : <Link href={href} className="link">{p.title}</Link>}
+                  {external ? <a href={href} target="_blank" rel="noreferrer">{p.title}</a> : <Link href={href}>{p.title}</Link>}
                 </h2>
-                <p className="media-text" style={{ textAlign: "left" }}>{p.excerpt}</p>
+                <p className="media-text">{p.excerpt}</p>
+                {external ? <a className="btn" href={href} target="_blank" rel="noreferrer" style={{ marginTop: 22 }}>Read on {p.source ?? "the original site"} <span className="arr">→</span></a>
+                  : <Link className="btn" href={href} style={{ marginTop: 22 }}>Read post <span className="arr">→</span></Link>}
               </div>
             </article>
           );
         })}
-        {posts.length === 0 && <p style={{ padding: "40px 0" }}>No posts yet.</p>}
+        {posts.length === 0 && <p className="empty">No posts yet.</p>}
       </div>
       <div className="after-list" />
     </section>

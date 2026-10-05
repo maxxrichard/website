@@ -7,14 +7,16 @@ export default async function MediaPage() {
   const [profile, items] = await Promise.all([getProfile(), getPress()]);
   return (
     <section className="list-wrap">
-      <h1 className="h-xl">Media Coverage</h1>
-      {profile?.mediaIntro && <div className="intro serif" dangerouslySetInnerHTML={{ __html: renderMarkdown(profile.mediaIntro) }} />}
-      <hr className="list-divider" />
+      <div data-reveal>
+        <p className="eyebrow">In the press</p>
+        <h1 className="h-xl" style={{ marginTop: 10 }}>Media Coverage</h1>
+        {profile?.mediaIntro && <div className="intro serif" dangerouslySetInnerHTML={{ __html: renderMarkdown(profile.mediaIntro) }} />}
+      </div>
       <div className="media-list">
         {items.map((m, i) => {
           const embed = toYouTubeEmbed(m.videoUrl);
           return (
-            <article className={`media-item${i % 2 === 1 ? " flip" : ""}`} key={m.id}>
+            <article className={`media-item${i % 2 === 1 ? " flip" : ""}`} key={m.id} data-reveal>
               <div>
                 {embed ? (
                   <div className="media-video"><iframe src={embed} title={m.title} loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen /></div>
@@ -24,8 +26,8 @@ export default async function MediaPage() {
                 ) : <div className="media-video" />}
               </div>
               <div>
-                <div className="media-meta">{m.outlet}, {formatDateDots(m.date)}</div>
-                <h2 className="media-title">{m.url ? <a href={m.url} target="_blank" rel="noreferrer" className="link">{m.title}</a> : m.title}</h2>
+                <div className="media-meta">{m.outlet} · {formatDateDots(m.date)}</div>
+                <h2 className="media-title">{m.url ? <a href={m.url} target="_blank" rel="noreferrer">{m.title}</a> : m.title}</h2>
                 <p className="media-text">{m.description}</p>
               </div>
             </article>

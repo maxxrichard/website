@@ -8,7 +8,7 @@ added or edited without touching code.
 |---|---|
 | Framework | [Next.js 15](https://nextjs.org) (App Router, React 19, TypeScript) |
 | Database | SQLite via [libSQL](https://github.com/tursodatabase/libsql-client-ts) + [Drizzle ORM](https://orm.drizzle.team) — switch to hosted Turso/libSQL with one env var |
-| Styling | Hand-written CSS replicating the original design (Work Sans + Cormorant Garamond, black header/footer, lime venue tags) |
+| Styling | Hand-written CSS: Work Sans Extra Light headings, Forum body text, scroll-reveal and hover animations, responsive at 390 / 768 / 1440 px |
 | Admin | `/admin` — password-protected CMS with CRUD for every content type, image upload, Markdown editing, message inbox |
 | Deploy | Dockerfile + docker-compose, or any Node host (Railway, Render, Fly.io, Hetzner/VPS, …) |
 
@@ -51,6 +51,13 @@ The pages mirror the original Wix site one to one.
 
 Header (logo + menu) and the black Contact footer are shared by every page and driven by **Profile & settings**
 and **Social links**.
+
+### Interactive features
+
+- Home: full-screen background video (`Profile → Hero video`, poster image as fallback), animated counters, scroll-reveal sections.
+- Publications: filter by type and year, live search, expandable abstracts, one-click **Cite** (copies the reference), figure hover zoom.
+- Research: sticky project index with scroll-spy, numbered projects, image hover zoom.
+- Everywhere: animated header underline, off-canvas mobile menu, back-to-top button, button and card hover effects. Animations respect `prefers-reduced-motion`.
 
 ### Where to put files
 

@@ -9,13 +9,13 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
   if (!p) notFound();
   return (
     <article className="article-wrap">
-      <Link href="/blogs" className="underline" style={{ fontSize: 16 }}>← All posts</Link>
-      <div className="meta" style={{ marginTop: 30 }}>{p.source ?? "Blog"}, {formatDateDots(p.publishedAt)}{p.readingMinutes ? ` · ${p.readingMinutes} min read` : ""}</div>
+      <Link href="/blogs" className="link-u" style={{ fontFamily: "var(--sans)", fontSize: 13, letterSpacing: ".08em", textTransform: "uppercase" }}>← All posts</Link>
+      <div className="meta">{p.source ?? "Blog"} · {formatDateDots(p.publishedAt)}{p.readingMinutes ? ` · ${p.readingMinutes} min read` : ""}</div>
       <h1 className="h-lg">{p.title}</h1>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       {p.coverImage && <img className="cover" src={p.coverImage} alt={p.title} />}
       <div className="prose serif" dangerouslySetInnerHTML={{ __html: renderMarkdown(p.contentMarkdown) }} />
-      {p.externalUrl && <p style={{ marginTop: 30 }}><a className="btn" href={p.externalUrl} target="_blank" rel="noreferrer">Read on {p.source ?? "original site"}</a></p>}
+      {p.externalUrl && <p style={{ marginTop: 30 }}><a className="btn" href={p.externalUrl} target="_blank" rel="noreferrer">Read on {p.source ?? "original site"} <span className="arr">→</span></a></p>}
     </article>
   );
 }
