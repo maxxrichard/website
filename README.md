@@ -1,20 +1,7 @@
-# maxxrichard.com — personal academic website + CMS
+# Website
 
-A complete, self-hostable replica of **www.maxxrichard.com** (Maxx Richard Rahman) with a database and an
-admin panel, so publications, projects, news, blog posts, press coverage, teaching entries and the profile can be
-added or edited without touching code.
 
-| Area | Tech |
-|---|---|
-| Framework | [Next.js 15](https://nextjs.org) (App Router, React 19, TypeScript) |
-| Database | SQLite via [libSQL](https://github.com/tursodatabase/libsql-client-ts) + [Drizzle ORM](https://orm.drizzle.team) — switch to hosted Turso/libSQL with one env var |
-| Styling | Hand-written CSS: Work Sans Extra Light headings, Forum body text, scroll-reveal and hover animations, responsive at 390 / 768 / 1440 px |
-| Admin | `/admin` — password-protected CMS with CRUD for every content type, image upload, Markdown editing, message inbox |
-| Deploy | Dockerfile + docker-compose, or any Node host (Railway, Render, Fly.io, Hetzner/VPS, …) |
-
----
-
-## 1. Quick start (local)
+## 1. Quick start (Local)
 
 ```bash
 git clone https://github.com/maxxrichard/website.git
@@ -119,41 +106,7 @@ admin panel; the DB is the source of truth.
 
 ## 6. Hosting and connecting your domain
 
-### Option A — Docker on a VPS (Hetzner, DigitalOcean, …) — recommended
-
-```bash
-cp .env.example .env && nano .env        # set credentials, SESSION_SECRET, SITE_URL=https://www.maxxrichard.com
-docker compose up -d --build             # site on port 3000, data persisted in Docker volumes
-```
-
-Put a reverse proxy with TLS in front, e.g. [Caddy](https://caddyserver.com):
-
-```
-www.maxxrichard.com, maxxrichard.com {
-    reverse_proxy localhost:3000
-}
-```
-
-DNS (at your registrar / Wix DNS):
-
-| Type | Name | Value |
-|---|---|---|
-| `A` | `@` | server IPv4 |
-| `AAAA` | `@` | server IPv6 (optional) |
-| `CNAME` | `www` | `maxxrichard.com` |
-
-Caddy obtains Let's Encrypt certificates automatically. Back up the volumes `site-data` (database) and
-`site-uploads` (images).
-
-### Option B — Railway / Render / Fly.io (Node or Docker)
-
-1. Create a service from this repo (they detect the `Dockerfile`).
-2. Attach a **persistent volume** mounted at `/app/data` (and `/app/public/uploads`), or set `DATABASE_URL` to a
-   [Turso](https://turso.tech) database (free tier) and `DATABASE_AUTH_TOKEN`.
-3. Set the environment variables from section 4.
-4. Add the custom domain in the provider's dashboard and create the DNS `CNAME`/`A` records it shows.
-
-### Option C — Vercel
+### Vercel
 
 The app initialises itself: on the first request it runs the database migrations and, if the database is empty,
 loads the full site content. So a plain "Import Git Repository" deploy works immediately.
@@ -194,11 +147,3 @@ public/files           your papers, posters, slides, CV and pictures
 To add a new field to a content type: edit `src/db/schema.ts`, run `npm run db:generate && npm run db:migrate`,
 then add the field to `src/lib/resources.ts` (admin form) and render it in the page component.
 
-## 8. Content notes
-
-Text, structure and order follow the live site (maxxrichard06.wixsite.com/website) page by page. Two arXiv preprints
-(LongMoE, CAMOS) are stored but hidden because the live site does not list them; switch *Visible on site* in the
-admin to show them. The Instagram link in *Social links* needs your profile URL. Buttons such as *Code* or *Poster*
-appear as soon as the corresponding URL is filled in.
-
-See `ATTRIBUTION.md` for third-party credits.
