@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { asc, desc, sql } from "drizzle-orm";
-import { db, schema } from "@/db";
+import { db, schema, ensureReady } from "@/db";
 import { getResource } from "@/lib/resources";
 import { deleteRecord, toggleBoolean } from "../actions";
 import DeleteButton from "@/components/admin/DeleteButton";
@@ -10,6 +10,7 @@ import ToggleButton from "@/components/admin/ToggleButton";
 export default async function ResourceListPage({ params, searchParams }: { params: Promise<{ resource: string }>; searchParams: Promise<{ saved?: string; q?: string }> }) {
   const { resource } = await params;
   const { saved, q } = await searchParams;
+  await ensureReady();
   const res = getResource(resource);
   if (!res) notFound();
   const table = schema[res.table] as unknown as Record<string, never> & { id: never };

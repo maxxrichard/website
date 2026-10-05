@@ -1,5 +1,5 @@
 "use server";
-import { db, schema } from "@/db";
+import { db, schema, ensureReady } from "@/db";
 
 export type ContactState = { ok: boolean; message: string } | null;
 
@@ -12,6 +12,7 @@ export async function sendMessage(_prev: ContactState, formData: FormData): Prom
   if (!fullName || !email || !message) return { ok: false, message: "Please fill in all fields." };
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { ok: false, message: "Please enter a valid email address." };
   if (message.length > 5000) return { ok: false, message: "Message is too long." };
+  await ensureReady();
   await db.insert(schema.messages).values({ fullName, email, message, createdAt: new Date().toISOString() });
   return { ok: true, message: "Thanks! Your message has been sent." };
 }

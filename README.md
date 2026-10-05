@@ -70,6 +70,8 @@ The sidebar (photo, name, title, contacts, social icons) and the footer are driv
 | `SESSION_SECRET` | Long random string signing the admin cookie (`openssl rand -hex 32`) |
 | `SITE_URL` | Public URL, used for metadata, `robots.txt` and `sitemap.xml` |
 | `UPLOAD_DIR` | Optional, defaults to `public/uploads` |
+| `BLOB_READ_WRITE_TOKEN` | Optional; when set (Vercel Blob) uploads go to Blob storage instead of local disk |
+| `AUTO_SEED` | Optional; `false` disables automatic seeding of an empty database |
 
 ## 5. Database
 
@@ -124,12 +126,26 @@ Caddy obtains Let's Encrypt certificates automatically. Back up the volumes `sit
 
 ### Option C — Vercel
 
-Vercel's filesystem is read-only, so use Turso for the database (`DATABASE_URL=libsql://…`,
-`DATABASE_AUTH_TOKEN=…`) and host uploaded images externally (paste URLs) or on Vercel Blob. Add the domain under
-*Project → Settings → Domains*.
+The app initialises itself: on the first request it runs the database migrations and, if the database is empty,
+loads the full site content. So a plain "Import Git Repository" deploy works immediately.
 
-On first start the container runs migrations and seeds the database if it is empty (`SEED_ON_EMPTY=false` disables
-seeding).
+1. Import the repository in Vercel (framework: Next.js, no build settings to change).
+2. Set the environment variables `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `SESSION_SECRET` and `SITE_URL`.
+3. **Make the database permanent.** Vercel's filesystem is read-only, so without a database URL the site runs from a
+   temporary SQLite copy in `/tmp`: pages work, but admin edits are lost whenever the function restarts (the admin
+   shows a warning). Create a free [Turso](https://turso.tech) database and set
+   `DATABASE_URL=libsql://<name>-<org>.turso.io` and `DATABASE_AUTH_TOKEN=<token>` in Vercel, then redeploy. The app
+   migrates and seeds the Turso database automatically on the first request.
+   ```bash
+   # with the Turso CLI
+   turso db create maxxrichard-site
+   turso db show maxxrichard-site --url
+   turso db tokens create maxxrichard-site
+   ```
+4. **Uploads.** Add a Vercel Blob store to the project (Storage → Blob). Vercel injects `BLOB_READ_WRITE_TOKEN`
+   and the admin upload button then stores images and PDFs in Blob. Without it you can still paste image URLs.
+5. Add `maxxrichard.com` and `www.maxxrichard.com` under *Project → Settings → Domains* and create the DNS records
+   Vercel shows (an `A` record for the apex and a `CNAME` for `www`).
 
 ## 7. Project layout
 

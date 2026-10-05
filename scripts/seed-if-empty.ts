@@ -1,9 +1,10 @@
-import { db, schema } from "../src/db";
+import { db, runMigrations, isDatabaseEmpty } from "../src/db";
+import { seedDatabase } from "../src/db/seed-data";
 
 async function main() {
-  const rows = await db.select({ id: schema.profile.id }).from(schema.profile).limit(1);
-  if (rows.length) { console.log("• Database already has content – skipping seed."); return; }
+  await runMigrations();
+  if (!(await isDatabaseEmpty())) { console.log("• Database already has content – skipping seed."); return; }
   console.log("• Empty database – seeding initial content…");
-  await import("./seed");
+  await seedDatabase(db);
 }
 main().catch((e) => { console.error(e); process.exit(1); });

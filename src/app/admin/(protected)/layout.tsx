@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { requireSession } from "@/lib/auth";
 import { getCounts } from "@/lib/queries";
+import { isEphemeral } from "@/db";
 import { resourceList } from "@/lib/resources";
 import { logout } from "../login/actions";
 import "../admin.css";
@@ -32,7 +33,16 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <form action={logout}><button className="adm-btn adm-btn-sm" style={{ marginTop: 10, marginLeft: 12 }}>Log out ({session.email})</button></form>
         </nav>
       </aside>
-      <main className="adm-main">{children}</main>
+      <main className="adm-main">
+        {isEphemeral && (
+          <div className="adm-warning">
+            <strong>Temporary database.</strong> This host has a read-only filesystem, so the site is running from a copy of the
+            seed content in temporary storage. Edits made here will be lost when the server restarts. For permanent storage set
+            <code> DATABASE_URL</code> (and <code>DATABASE_AUTH_TOKEN</code>) to a Turso/libSQL database — see README, section 6.
+          </div>
+        )}
+        {children}
+      </main>
     </div>
   );
 }

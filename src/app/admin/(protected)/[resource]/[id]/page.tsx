@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { eq } from "drizzle-orm";
-import { db, schema } from "@/db";
+import { db, schema, ensureReady } from "@/db";
 import { getResource } from "@/lib/resources";
 import { saveRecord, deleteRecord } from "../../actions";
 import ResourceForm from "@/components/admin/ResourceForm";
@@ -9,6 +9,7 @@ import DeleteButton from "@/components/admin/DeleteButton";
 
 export default async function EditRecordPage({ params }: { params: Promise<{ resource: string; id: string }> }) {
   const { resource, id } = await params;
+  await ensureReady();
   const res = getResource(resource);
   const numId = Number(id);
   if (!res || !Number.isInteger(numId)) notFound();

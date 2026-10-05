@@ -2,7 +2,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { eq, sql } from "drizzle-orm";
-import { db, schema } from "@/db";
+import { db, schema, ensureReady } from "@/db";
 import { requireSession } from "@/lib/auth";
 import { getResource, type FieldDef } from "@/lib/resources";
 import { slugify } from "@/lib/markdown";
@@ -39,6 +39,7 @@ function revalidateAll() {
 
 export async function saveRecord(resourceKey: string, id: number | null, formData: FormData) {
   await requireSession();
+  await ensureReady();
   const { res, table } = tableFor(resourceKey);
   const values: Record<string, unknown> = {};
   const columns = table as unknown as Record<string, { notNull?: boolean; dataType?: string } | undefined>;
@@ -78,6 +79,7 @@ export async function saveRecord(resourceKey: string, id: number | null, formDat
 
 export async function deleteRecord(resourceKey: string, id: number) {
   await requireSession();
+  await ensureReady();
   const { table } = tableFor(resourceKey);
   await db.delete(table as never).where(eq(table.id, id));
   revalidateAll();
@@ -86,6 +88,7 @@ export async function deleteRecord(resourceKey: string, id: number) {
 
 export async function toggleBoolean(resourceKey: string, id: number, field: string, value: boolean) {
   await requireSession();
+  await ensureReady();
   const { res, table } = tableFor(resourceKey);
   if (!res.fields.some((f) => f.name === field && f.type === "checkbox")) throw new Error("Invalid field");
   await db.update(table as never).set({ [field]: value } as never).where(eq(table.id, id));
@@ -95,6 +98,7 @@ export async function toggleBoolean(resourceKey: string, id: number, field: stri
 
 export async function saveProfile(formData: FormData) {
   await requireSession();
+  await ensureReady();
   const str = (k: string) => { const v = String(formData.get(k) ?? "").trim(); return v === "" ? null : v; };
   const values = {
     fullName: str("fullName") ?? "Your Name",
@@ -117,12 +121,14 @@ export async function saveProfile(formData: FormData) {
 
 export async function markMessageRead(id: number, read: boolean) {
   await requireSession();
+  await ensureReady();
   await db.update(schema.messages).set({ read }).where(eq(schema.messages.id, id));
   revalidatePath("/admin/messages");
 }
 
 export async function deleteMessage(id: number) {
   await requireSession();
+  await ensureReady();
   await db.delete(schema.messages).where(eq(schema.messages.id, id));
   revalidatePath("/admin/messages");
 }
