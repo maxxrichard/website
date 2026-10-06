@@ -86,7 +86,8 @@ the originals under the same names to upgrade their quality.
 | `SESSION_SECRET` | Long random string signing the admin cookie (`openssl rand -hex 32`) |
 | `SITE_URL` | Public URL, used for metadata, `robots.txt` and `sitemap.xml` |
 | `UPLOAD_DIR` | Optional, defaults to `public/uploads` |
-| `BLOB_READ_WRITE_TOKEN` | Optional; when set (Vercel Blob) uploads go to Blob storage instead of local disk |
+| `BLOB_READ_WRITE_TOKEN` | Optional; when set (Vercel Blob) uploads go to Blob storage instead of local disk. Public and private stores both work; private files are served via `/blob/…` |
+| `BLOB_ACCESS` | Optional; `public` or `private` to skip the automatic store-type detection |
 | `AUTO_SEED` | Optional; `false` disables automatic seeding of an empty database |
 
 ## 5. Database

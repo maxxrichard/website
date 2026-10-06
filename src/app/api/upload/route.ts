@@ -6,13 +6,13 @@ import { randomBytes } from "node:crypto";
 import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
 import { getSession } from "@/lib/auth";
 import { siteOrigin } from "@/lib/site-url";
+import { blobEnabled, blobAccess, servedBlobUrl } from "@/lib/blob";
 
 const ALLOWED: Record<string, string> = {
   "image/jpeg": ".jpg", "image/png": ".png", "image/webp": ".webp", "image/gif": ".gif", "image/svg+xml": ".svg",
   "application/pdf": ".pdf", "video/mp4": ".mp4", "video/webm": ".webm",
 };
 const MAX_BYTES = 50 * 1024 * 1024;
-const blobEnabled = () => Boolean(process.env.BLOB_READ_WRITE_TOKEN);
 
 function safeName(original: string, type: string) {
   const ext = ALLOWED[type] ?? path.extname(original).toLowerCase();
@@ -23,7 +23,10 @@ function safeName(original: string, type: string) {
 /** Tells the admin UI how uploads work on this host. */
 export async function GET() {
   if (!(await getSession())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  return NextResponse.json({ mode: blobEnabled() ? "blob" : "local", maxBytes: blobEnabled() ? MAX_BYTES : 4 * 1024 * 1024 });
+  if (!blobEnabled()) return NextResponse.json({ mode: "local", access: "public", maxBytes: 4 * 1024 * 1024 });
+  let access: "public" | "private" = "public";
+  try { access = await blobAccess(); } catch (e) { console.error("[upload] blob probe failed:", (e as Error).message); }
+  return NextResponse.json({ mode: "blob", access, maxBytes: MAX_BYTES });
 }
 
 export async function POST(req: Request) {
@@ -86,8 +89,17 @@ async function handlePost(req: Request) {
 
   if (blobEnabled()) {
     const { put } = await import("@vercel/blob");
-    const blob = await put(`uploads/${name}`, file, { access: "public", contentType: file.type });
-    return NextResponse.json({ url: blob.url });
+    let access = await blobAccess();
+    let blob;
+    try {
+      blob = await put(`uploads/${name}`, file, { access, contentType: file.type });
+    } catch (e) {
+      if (access === "public" && /private/i.test(String((e as Error).message))) {
+        access = "private";
+        blob = await put(`uploads/${name}`, file, { access, contentType: file.type });
+      } else throw e;
+    }
+    return NextResponse.json({ url: servedBlobUrl(blob, access) });
   }
 
   const dir = path.resolve(process.cwd(), process.env.UPLOAD_DIR ?? "public/uploads");

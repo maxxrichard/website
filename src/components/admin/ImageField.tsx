@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 
-type Mode = { mode: "blob" | "local"; maxBytes: number };
+type Mode = { mode: "blob" | "local"; access: "public" | "private"; maxBytes: number };
 
 /** Downscale very large raster images in the browser so uploads stay small and pages fast. */
 async function shrinkImage(file: File, maxEdge = 2400, quality = 0.88): Promise<File> {
@@ -47,15 +47,16 @@ export default function ImageField({ name, defaultValue }: { name: string; defau
         const { upload } = await import("@vercel/blob/client");
         const controller = new AbortController();
         let lastPct = 0;
+        const access = mode.current.access ?? "public";
         const direct = upload(`uploads/${file.name}`, file, {
-          access: "public", handleUploadUrl: "/api/upload", contentType: file.type, abortSignal: controller.signal,
+          access, handleUploadUrl: "/api/upload", contentType: file.type, abortSignal: controller.signal,
           onUploadProgress: (p) => { lastPct = p.percentage; setProgress(Math.round(p.percentage)); },
         });
         // Safety net: if the transfer is done but the confirmation never arrives, stop waiting after 45 s.
         const timeout = new Promise<never>((_, reject) => setTimeout(() => reject(new Error(lastPct >= 95 ? "stalled" : "timeout")), 45000));
         try {
           const blob = await Promise.race([direct, timeout]);
-          setValue(blob.url);
+          setValue(access === "public" ? blob.url : `/blob/${blob.pathname}`);
           return;
         } catch (e) {
           controller.abort();
@@ -101,6 +102,7 @@ export default function ImageField({ name, defaultValue }: { name: string; defau
       {error && <span className="adm-error">{error}</span>}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       {value && /\.(jpe?g|png|webp|gif|svg)(\?|$)/i.test(value) && <img src={value} alt="preview" />}
+      {value && /\.(mp4|webm)(\?|$)/i.test(value) && <span className="adm-muted">Video: {value}</span>}
       {value && /\.pdf(\?|$)/i.test(value) && <span className="adm-muted">PDF: {value}</span>}
     </div>
   );
