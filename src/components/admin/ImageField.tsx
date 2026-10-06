@@ -44,12 +44,30 @@ export default function ImageField({ name, defaultValue }: { name: string; defau
       const file = await shrinkImage(input);
       if (mode.current?.mode === "blob") {
         const { upload } = await import("@vercel/blob/client");
-        const blob = await upload(`uploads/${file.name}`, file, {
-          access: "public", handleUploadUrl: "/api/upload", contentType: file.type,
-          onUploadProgress: (p) => setProgress(Math.round(p.percentage)),
+        const controller = new AbortController();
+        let lastPct = 0;
+        const direct = upload(`uploads/${file.name}`, file, {
+          access: "public", handleUploadUrl: "/api/upload", contentType: file.type, abortSignal: controller.signal,
+          onUploadProgress: (p) => { lastPct = p.percentage; setProgress(Math.round(p.percentage)); },
         });
-        setValue(blob.url);
-        return;
+        // Safety net: if the transfer is done but the confirmation never arrives, stop waiting after 45 s.
+        const timeout = new Promise<never>((_, reject) => setTimeout(() => reject(new Error(lastPct >= 95 ? "stalled" : "timeout")), 45000));
+        try {
+          const blob = await Promise.race([direct, timeout]);
+          setValue(blob.url);
+          return;
+        } catch (e) {
+          controller.abort();
+          const reason = (e as Error).message;
+          if (file.size <= 4 * 1024 * 1024) {
+            // Fall back to the server-side upload (works for files up to ~4 MB on Vercel).
+            setProgress(null);
+          } else {
+            throw new Error(reason === "stalled"
+              ? "The file was sent but Vercel Blob did not confirm the upload. Check that Deployment Protection is off for this deployment (Vercel → Settings → Deployment Protection), then try again."
+              : `Upload failed: ${reason}`);
+          }
+        }
       }
       const fd = new FormData(); fd.append("file", file);
       const res = await fetch("/api/upload", { method: "POST", body: fd });

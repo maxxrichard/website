@@ -32,22 +32,28 @@ export async function POST(req: Request) {
   //    (bypasses the 4.5 MB request limit of serverless functions).
   if (contentType.includes("application/json")) {
     if (!blobEnabled()) return NextResponse.json({ error: "Blob storage is not configured on this host." }, { status: 400 });
-    if (!(await getSession())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     try {
       const body = (await req.json()) as HandleUploadBody;
       const result = await handleUpload({
         body, request: req,
-        onBeforeGenerateToken: async (pathname) => ({
-          allowedContentTypes: Object.keys(ALLOWED),
-          maximumSizeInBytes: MAX_BYTES,
-          addRandomSuffix: true,
-          tokenPayload: JSON.stringify({ pathname }),
-        }),
+        // Step 1 – the admin's browser asks for an upload token: must be logged in.
+        onBeforeGenerateToken: async (pathname) => {
+          if (!(await getSession())) throw new Error("Unauthorized");
+          return {
+            allowedContentTypes: Object.keys(ALLOWED),
+            maximumSizeInBytes: MAX_BYTES,
+            addRandomSuffix: true,
+            tokenPayload: JSON.stringify({ pathname }),
+          };
+        },
+        // Step 2 – Vercel Blob calls back when the upload is done. This request comes from Vercel's
+        // servers (no login cookie) and is authenticated by handleUpload via its signature.
         onUploadCompleted: async () => { /* nothing to persist; the URL is stored with the record */ },
       });
       return NextResponse.json(result);
     } catch (e) {
-      return NextResponse.json({ error: (e as Error).message }, { status: 400 });
+      const msg = (e as Error).message;
+      return NextResponse.json({ error: msg }, { status: msg === "Unauthorized" ? 401 : 400 });
     }
   }
 
