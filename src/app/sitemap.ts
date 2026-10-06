@@ -1,8 +1,9 @@
 import type { MetadataRoute } from "next";
+import { siteOrigin } from "@/lib/site-url";
 import { getBlogPosts } from "@/lib/queries";
 export const dynamic = "force-dynamic";
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const base = process.env.SITE_URL ?? "http://localhost:3000";
+  const base = siteOrigin();
   const posts = await getBlogPosts().catch(() => []);
   const statics = ["", "/about", "/research", "/publications", "/teaching", "/media", "/blogs", "/contact", "/news"].map((p) => ({ url: `${base}${p}`, lastModified: new Date() }));
   return [
