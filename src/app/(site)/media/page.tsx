@@ -1,7 +1,7 @@
 import { getProfile, getPress } from "@/lib/queries";
 import { renderMarkdown, formatDateDots, toYouTubeEmbed } from "@/lib/markdown";
 
-export const metadata = { title: "Media" };
+export const metadata = { title: "Media", description: "Media coverage, talks and interviews featuring Maxx Richard Rahman.", alternates: { canonical: "/media" } };
 
 export default async function MediaPage() {
   const [profile, items] = await Promise.all([getProfile(), getPress()]);

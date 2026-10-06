@@ -2,7 +2,7 @@ import { getProfile, getSocialLinks } from "@/lib/queries";
 import SocialIcons from "@/components/SocialIcons";
 import ContactForm from "@/components/ContactForm";
 
-export const metadata = { title: "Contact" };
+export const metadata = { title: "Contact", description: "Contact Maxx Richard Rahman: email, address and contact form.", alternates: { canonical: "/contact" } };
 
 export default async function ContactPage() {
   const [profile, socials] = await Promise.all([getProfile(), getSocialLinks()]);

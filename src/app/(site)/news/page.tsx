@@ -1,7 +1,7 @@
 import { getNews } from "@/lib/queries";
 import { formatDateDots, renderMarkdown } from "@/lib/markdown";
 
-export const metadata = { title: "News" };
+export const metadata = { title: "News", description: "News and updates from Maxx Richard Rahman.", alternates: { canonical: "/news" } };
 
 export default async function NewsPage() {
   const items = await getNews({ publishedOnly: true });

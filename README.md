@@ -84,7 +84,8 @@ the originals under the same names to upgrade their quality.
 | `DATABASE_AUTH_TOKEN` | Only for remote libSQL/Turso |
 | `ADMIN_EMAIL`, `ADMIN_PASSWORD` | Admin credentials |
 | `SESSION_SECRET` | Long random string signing the admin cookie (`openssl rand -hex 32`) |
-| `SITE_URL` | Public URL, used for metadata, `robots.txt` and `sitemap.xml` |
+| `SITE_URL` | Public URL, used for metadata, canonical links, `robots.txt` and `sitemap.xml` |
+| `GOOGLE_SITE_VERIFICATION` | Optional; Google Search Console HTML-tag verification code (see §7) |
 | `UPLOAD_DIR` | Optional, defaults to `public/uploads` |
 | `BLOB_READ_WRITE_TOKEN` | Optional; when set (Vercel Blob) uploads go to Blob storage instead of local disk. Public and private stores both work; private files are served via `/blob/…` |
 | `BLOB_ACCESS` | Optional; `public` or `private` to skip the automatic store-type detection |
@@ -130,7 +131,34 @@ loads the full site content. So a plain "Import Git Repository" deploy works imm
 5. Add `maxxrichard.com` and `www.maxxrichard.com` under *Project → Settings → Domains* and create the DNS records
    Vercel shows (an `A` record for the apex and a `CNAME` for `www`).
 
-## 7. Project layout
+## 7. Getting the site listed on Google
+
+A new domain is not indexed automatically; Google only knows about it after it has discovered it. The site already
+serves everything Google needs (`robots.txt`, `sitemap.xml`, canonical URLs, Open Graph tags and schema.org
+`Person` structured data that links to the social/scholar profiles). What remains is a one-time setup:
+
+1. **Make sure `SITE_URL` is set** in production (`https://www.maxxrichard.com`). Without it the sitemap and
+   canonical links fall back to the `*.vercel.app` deployment URL and Google indexes the wrong host.
+   Check `https://www.maxxrichard.com/sitemap.xml` and `https://www.maxxrichard.com/robots.txt` in a browser.
+2. **Make sure the site is publicly reachable**: in Vercel, *Settings → Deployment Protection* must be off for the
+   production deployment (Vercel Authentication / password protection blocks Googlebot). `curl -I` on the
+   homepage must return `200`, not `401`.
+3. **Add the site to [Google Search Console](https://search.google.com/search-console)** as a *Domain* property
+   (`maxxrichard.com`). Verify by adding the TXT record Google shows to the domain's DNS (at the registrar, or in
+   Vercel → Domains if Vercel manages the DNS). Alternatively add a *URL prefix* property and verify with the
+   HTML-tag method by setting `GOOGLE_SITE_VERIFICATION` to the code from the `content="…"` attribute and redeploying.
+4. In Search Console open **Sitemaps** and submit `https://www.maxxrichard.com/sitemap.xml`.
+5. Use **URL inspection** on `https://www.maxxrichard.com/` and click **Request indexing**. Repeat for the main
+   pages (`/about`, `/publications`, `/research`).
+6. **Link to the site from profiles Google already indexes** (Google Scholar homepage field, LinkedIn, GitHub
+   profile, ORCID, DFKI and Saarland University staff pages). These links are what makes the site rank for the
+   name rather than just appear in the index.
+7. Optional: verify the site in [Bing Webmaster Tools](https://www.bing.com/webmasters) (it can import the Search
+   Console property), which also feeds DuckDuckGo.
+
+Indexing typically takes a few days to a few weeks after step 5; Search Console → *Pages* shows the progress.
+
+## 8. Project layout
 
 ```
 src/app/(site)/        public pages (home, about, research, publications, teaching, media, blogs, contact, news)

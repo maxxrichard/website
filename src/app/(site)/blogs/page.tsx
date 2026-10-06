@@ -2,7 +2,7 @@ import Link from "next/link";
 import { getProfile, getBlogPosts } from "@/lib/queries";
 import { renderMarkdown, formatDateDots } from "@/lib/markdown";
 
-export const metadata = { title: "Blogs" };
+export const metadata = { title: "Blogs", description: "Blog posts by Maxx Richard Rahman.", alternates: { canonical: "/blogs" } };
 
 export default async function BlogsPage() {
   const [profile, posts] = await Promise.all([getProfile(), getBlogPosts()]);

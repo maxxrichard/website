@@ -1,7 +1,7 @@
 import { getProfile, getEducation, getExperience } from "@/lib/queries";
 import { renderMarkdown } from "@/lib/markdown";
 
-export const metadata = { title: "About" };
+export const metadata = { title: "About", description: "About Maxx Richard Rahman: biography, education and professional experience.", alternates: { canonical: "/about" } };
 
 export default async function AboutPage() {
   const [profile, edu, exp] = await Promise.all([getProfile(), getEducation(), getExperience()]);

@@ -2,7 +2,7 @@ import { getProfile, getProjects } from "@/lib/queries";
 import { renderMarkdown } from "@/lib/markdown";
 import ResearchNav from "@/components/ResearchNav";
 
-export const metadata = { title: "Research" };
+export const metadata = { title: "Research", description: "Research projects of Maxx Richard Rahman: anomaly detection, LLMs, anti-doping and healthcare analytics.", alternates: { canonical: "/research" } };
 
 export default async function ResearchPage() {
   const [profile, projects] = await Promise.all([getProfile(), getProjects()]);
