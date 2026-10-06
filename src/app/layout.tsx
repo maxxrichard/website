@@ -9,13 +9,23 @@ const forum = Forum({ subsets: ["latin"], weight: "400", variable: "--font-serif
 
 export async function generateMetadata(): Promise<Metadata> {
   const p = await getProfile().catch(() => null);
-  const title = p?.siteTitle ?? p?.fullName ?? "Maxx Richard Rahman";
+  const name = p?.fullName ?? "Maxx Richard Rahman";
+  const title = p?.siteTitle ?? name;
+  const description = p?.siteDescription ?? p?.tagline ?? `${name} — ${p?.jobTitle ?? "personal academic website"}`;
+  const image = p?.avatar ?? "/images/site/portrait.jpg";
+  // Google Search Console "HTML tag" verification (optional). Set GOOGLE_SITE_VERIFICATION
+  // to the content value Search Console shows, e.g. "AbC123…".
+  const google = process.env.GOOGLE_SITE_VERIFICATION?.trim();
   return {
-    title: { default: title, template: `%s | ${p?.fullName ?? title}` },
-    description: p?.siteDescription ?? p?.tagline ?? "Personal academic website",
+    title: { default: title, template: `%s | ${name}` },
+    description,
     metadataBase: siteUrl(),
     icons: { icon: "/favicon.ico" },
-    openGraph: { title, description: p?.siteDescription ?? undefined, images: p?.avatar ? [p.avatar] : [] },
+    // Explicitly allow indexing; admin pages opt out individually.
+    robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 } },
+    openGraph: { type: "website", siteName: name, title, description, images: [image], locale: "en_US" },
+    twitter: { card: "summary", title, description, images: [image] },
+    ...(google ? { verification: { google } } : {}),
   };
 }
 

@@ -2,7 +2,7 @@ import { getPublications } from "@/lib/queries";
 import { renderAuthors } from "@/lib/markdown";
 import PublicationsBrowser from "@/components/PublicationsBrowser";
 
-export const metadata = { title: "Publications" };
+export const metadata = { title: "Publications", description: "Publications by Maxx Richard Rahman: papers, theses, posters and code.", alternates: { canonical: "/publications" } };
 
 export default async function PublicationsPage() {
   const pubs = await getPublications();

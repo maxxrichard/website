@@ -4,6 +4,8 @@ import { renderMarkdown, renderAuthors, formatDateDots } from "@/lib/markdown";
 import SocialIcons from "@/components/SocialIcons";
 import StatsStrip from "@/components/StatsStrip";
 
+export const metadata = { alternates: { canonical: "/" } };
+
 export default async function HomePage() {
   const [profile, socials, pubs, news, projects, teaching] = await Promise.all([
     getProfile(), getSocialLinks(), getPublications(), getNews({ publishedOnly: true }), getProjects(), getTeaching(),

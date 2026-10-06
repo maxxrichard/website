@@ -1,7 +1,7 @@
 import { getProfile, getTeaching } from "@/lib/queries";
 import { renderMarkdown } from "@/lib/markdown";
 
-export const metadata = { title: "Teaching" };
+export const metadata = { title: "Teaching", description: "Courses and seminars taught by Maxx Richard Rahman.", alternates: { canonical: "/teaching" } };
 
 export default async function TeachingPage() {
   const [profile, items] = await Promise.all([getProfile(), getTeaching()]);
