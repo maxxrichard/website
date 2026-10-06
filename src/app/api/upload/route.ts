@@ -5,6 +5,7 @@ import path from "node:path";
 import { randomBytes } from "node:crypto";
 import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
 import { getSession } from "@/lib/auth";
+import { siteOrigin } from "@/lib/site-url";
 
 const ALLOWED: Record<string, string> = {
   "image/jpeg": ".jpg", "image/png": ".png", "image/webp": ".webp", "image/gif": ".gif", "image/svg+xml": ".svg",
@@ -26,6 +27,16 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
+  try {
+    return await handlePost(req);
+  } catch (e) {
+    const msg = (e as Error)?.message ?? "Unknown error";
+    console.error("[upload] failed:", msg);
+    return NextResponse.json({ error: `Upload failed on the server: ${msg}` }, { status: 500 });
+  }
+}
+
+async function handlePost(req: Request) {
   const contentType = req.headers.get("content-type") ?? "";
 
   // 1) Vercel Blob client uploads: the browser asks for a token here, then uploads directly to Blob
@@ -44,6 +55,8 @@ export async function POST(req: Request) {
             maximumSizeInBytes: MAX_BYTES,
             addRandomSuffix: true,
             tokenPayload: JSON.stringify({ pathname }),
+            // Always use the public URL for the completion callback (never an internal hostname).
+            callbackUrl: `${siteOrigin()}/api/upload`,
           };
         },
         // Step 2 – Vercel Blob calls back when the upload is done. This request comes from Vercel's
@@ -53,6 +66,7 @@ export async function POST(req: Request) {
       return NextResponse.json(result);
     } catch (e) {
       const msg = (e as Error).message;
+      console.error("[upload] blob token/callback failed:", msg);
       return NextResponse.json({ error: msg }, { status: msg === "Unauthorized" ? 401 : 400 });
     }
   }

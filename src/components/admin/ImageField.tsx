@@ -42,6 +42,7 @@ export default function ImageField({ name, defaultValue }: { name: string; defau
     setBusy(true); setError(null); setProgress(null);
     try {
       const file = await shrinkImage(input);
+      let directError: string | null = null;
       if (mode.current?.mode === "blob") {
         const { upload } = await import("@vercel/blob/client");
         const controller = new AbortController();
@@ -59,6 +60,7 @@ export default function ImageField({ name, defaultValue }: { name: string; defau
         } catch (e) {
           controller.abort();
           const reason = (e as Error).message;
+          directError = reason;
           if (file.size <= 4 * 1024 * 1024) {
             // Fall back to the server-side upload (works for files up to ~4 MB on Vercel).
             setProgress(null);
@@ -73,7 +75,8 @@ export default function ImageField({ name, defaultValue }: { name: string; defau
       const res = await fetch("/api/upload", { method: "POST", body: fd });
       const data = await readJson(res);
       if (!res.ok || !data.url) {
-        const msg = (data.error as string) ?? (res.status === 413 ? `The file is too large for this host (${(file.size / 1048576).toFixed(1)} MB). Add a Vercel Blob store or use a smaller file.` : `Upload failed (HTTP ${res.status}).`);
+        let msg = (data.error as string) ?? (res.status === 413 ? `The file is too large for this host (${(file.size / 1048576).toFixed(1)} MB). Add a Vercel Blob store or use a smaller file.` : `Upload failed (HTTP ${res.status}).`);
+        if (directError) msg += ` Direct upload error: ${directError}`;
         throw new Error(msg);
       }
       setValue(String(data.url));
