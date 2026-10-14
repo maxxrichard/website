@@ -20,7 +20,16 @@ export async function generateMetadata(): Promise<Metadata> {
     title: { default: title, template: `%s | ${name}` },
     description,
     metadataBase: siteUrl(),
-    icons: { icon: "/favicon.ico" },
+    // Favicon set generated from the site logo (public/icon-*.png, favicon.ico). Google shows the
+    // 48x48+ icon next to search results; keep these square and at least 48x48.
+    icons: {
+      icon: [
+        { url: "/favicon.ico", sizes: "48x48" },
+        { url: "/icon-192.png", type: "image/png", sizes: "192x192" },
+        { url: "/icon-512.png", type: "image/png", sizes: "512x512" },
+      ],
+      apple: "/apple-touch-icon.png",
+    },
     // Explicitly allow indexing; admin pages opt out individually.
     robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 } },
     openGraph: { type: "website", siteName: name, title, description, images: [image], locale: "en_US" },

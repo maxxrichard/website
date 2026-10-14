@@ -158,6 +158,13 @@ serves everything Google needs (`robots.txt`, `sitemap.xml`, canonical URLs, Ope
 
 Indexing typically takes a few days to a few weeks after step 5; Search Console → *Pages* shows the progress.
 
+**Site name and logo in Google results.** Google shows the site name from the `WebSite` structured data and
+`og:site_name` on the home page (both are the profile's full name) and the logo from the favicon. To change the
+logo, replace `public/favicon.ico`, `public/icon-192.png`, `public/icon-512.png` and `public/apple-touch-icon.png`
+with a square image (at least 48×48, ideally 512×512, the same picture in every file) and redeploy. After any
+change to these, open Search Console → URL inspection for the home page and click *Request indexing*; Google
+updates the site name and favicon on its next crawl, which can take a few days to weeks.
+
 ## 8. Project layout
 
 ```
