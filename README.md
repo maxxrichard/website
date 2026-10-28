@@ -130,8 +130,10 @@ loads the full site content. So a plain "Import Git Repository" deploy works imm
    and the admin upload button then stores images and PDFs in Blob. Without it you can still paste image URLs.
 5. Add `maxxrichard.com` and `www.maxxrichard.com` under *Project → Settings → Domains* and create the DNS records
    Vercel shows (an `A` record for the apex and a `CNAME` for `www`). Set the one that is **not** in `SITE_URL`
-   to "Redirect to" the other. The app also enforces this itself: requests to the host that differs from
-   `SITE_URL` only by the `www.` prefix get a permanent redirect, so search engines index a single copy of the site.
+   to "Redirect to" the other, so search engines index a single copy of the site. `SITE_URL` must name the domain
+   that is *not* redirected (e.g. `https://www.maxxrichard.com` when the apex redirects to `www`); otherwise the
+   canonical links and sitemap point at a redirecting address. On self-hosted deployments (Docker/VPS) the app
+   applies this redirect itself based on `SITE_URL`; on Vercel it leaves it to the domain settings.
 
 ## 7. Getting the site listed on Google
 

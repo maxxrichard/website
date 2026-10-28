@@ -5,8 +5,13 @@ import type { NextConfig } from "next";
  * "www.maxxrichard.com"; search engines then index two copies and split the ranking
  * between them. Whichever host SITE_URL names is the canonical one and the other
  * host redirects to it permanently. No SITE_URL (local dev) → no redirect.
+ *
+ * Not applied on Vercel: there the redirect is configured on the domain itself
+ * (Project → Settings → Domains, "Redirect to …"). Doing both would loop forever
+ * whenever SITE_URL and the Vercel domain settings disagree on the www prefix.
  */
 function canonicalHostRedirects() {
+  if (process.env.VERCEL) return [];
   const raw = (process.env.SITE_URL ?? process.env.NEXT_PUBLIC_SITE_URL ?? "").trim();
   if (!raw) return [];
   let url: URL;
