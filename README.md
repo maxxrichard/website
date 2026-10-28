@@ -129,7 +129,9 @@ loads the full site content. So a plain "Import Git Repository" deploy works imm
 4. **Uploads.** Add a Vercel Blob store to the project (Storage → Blob). Vercel injects `BLOB_READ_WRITE_TOKEN`
    and the admin upload button then stores images and PDFs in Blob. Without it you can still paste image URLs.
 5. Add `maxxrichard.com` and `www.maxxrichard.com` under *Project → Settings → Domains* and create the DNS records
-   Vercel shows (an `A` record for the apex and a `CNAME` for `www`).
+   Vercel shows (an `A` record for the apex and a `CNAME` for `www`). Set the one that is **not** in `SITE_URL`
+   to "Redirect to" the other. The app also enforces this itself: requests to the host that differs from
+   `SITE_URL` only by the `www.` prefix get a permanent redirect, so search engines index a single copy of the site.
 
 ## 7. Getting the site listed on Google
 
